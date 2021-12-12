@@ -13,7 +13,7 @@ FORMULA_TEMPLATE = env.from_string(dedent("""\
     class {{ package.name|dash_to_studly }} < Formula
       include Language::Python::Virtualenv
 
-      desc "Shiny new formula"
+      desc "{{package.description}}"
       homepage "{{ package.homepage }}"
       url "{{ package.url }}"
       sha256 "{{ package.checksum }}"
@@ -35,7 +35,7 @@ FORMULA_TEMPLATE = env.from_string(dedent("""\
       end
 
       test do
-        false
+        {{package.test}}
       end
     end
     """))

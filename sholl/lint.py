@@ -20,7 +20,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Alphabetize and tidy Homebrew resource stanzas.")
     parser.add_argument("-V", "--version", action="version",
-                        version='homebrew-pypi-poet {}'.format(__version__))
+                        version='sholl {}'.format(__version__))
     parser.add_argument("file", help="File containing resource stanzas, "
                         "or - for standard input.")
     args = parser.parse_args()

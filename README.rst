@@ -1,34 +1,34 @@
-homebrew-pypi-poet
+sholl
 ==================
 
 |Build Status| |Code Health| |PyPI page| |MIT license|
 
-Invoked like ``poet foo`` for some package foo **which is presently
+Invoked like ``sholl foo`` for some package foo **which is presently
 installed in sys.path**, determines which packages foo and its
 dependents depend on, downloads them from pypi and computes their
 checksums, and spits out Homebrew resource stanzas.
 
-``poet -f foo`` will give you a complete Homebrew formula.
+``sholl -f foo`` will give you a complete Homebrew formula.
 
-``poet -s foo`` will write a resource stanza for a single package
+``sholl -s foo`` will write a resource stanza for a single package
 ``foo``, which does not need to be installed, without considering its
 dependencies.
 
-``poet`` will use the versions of the packages that you presently have
+``sholl`` will use the versions of the packages that you presently have
 installed. If a package it wants to reference is not installed, the
 latest version on pypi will be downloaded and checksummed and its
 dependencies will **not** be considered.
 
-The easiest way to use ``poet`` is to create a virtualenv, use pip or
+The easiest way to use ``sholl`` is to create a virtualenv, use pip or
 setuptools to install the target package and its dependencies in the
-virtualenv, and then ``pip install homebrew-pypi-poet`` and run ``poet``
+virtualenv, and then ``pip install sholl`` and run ``sholl``
 inside the virtualenv.
 
 Usage is like:
 
 ::
 
-    usage: poet [-h] [-V]
+    usage: sholl [-h] [-V]
                 [--single package [package ...] | --formula package |
                  --resources package]
                 [--also package]
@@ -56,19 +56,19 @@ Usage is like:
 License
 -------
 
-homebrew-pypi-poet is offered under the MIT license.
+sholl is offered under the MIT license.
 
 Contributors
 ------------
 
-homebrew-pypi-poet is maintained by Tim D. Smith. Robson Peixoto,
+sholl is maintained by Tim D. Smith. Robson Peixoto,
 Alessio Bogon, Julien Maupetit, and Zhiming Wang are thanked for their helpful contributions!
 
-.. |Build Status| image:: https://travis-ci.org/tdsmith/homebrew-pypi-poet.svg?branch=master
-   :target: https://travis-ci.org/tdsmith/homebrew-pypi-poet
-.. |Code Health| image:: https://landscape.io/github/tdsmith/homebrew-pypi-poet/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/tdsmith/homebrew-pypi-poet/master
-.. |PyPI page| image:: https://img.shields.io/pypi/v/homebrew-pypi-poet.svg
-   :target: https://pypi.python.org/pypi/homebrew-pypi-poet
-.. |MIT license| image:: https://img.shields.io/pypi/l/homebrew-pypi-poet.svg
-   :target: https://github.com/tdsmith/homebrew-pypi-poet/blob/master/LICENSE
+.. |Build Status| image:: https://travis-ci.org/tdsmith/sholl.svg?branch=master
+   :target: https://travis-ci.org/tdsmith/sholl
+.. |Code Health| image:: https://landscape.io/github/tdsmith/sholl/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/tdsmith/sholl/master
+.. |PyPI page| image:: https://img.shields.io/pypi/v/sholl.svg
+   :target: https://pypi.python.org/pypi/sholl
+.. |MIT license| image:: https://img.shields.io/pypi/l/sholl.svg
+   :target: https://github.com/tdsmith/sholl/blob/master/LICENSE

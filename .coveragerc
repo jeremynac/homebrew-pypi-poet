@@ -4,5 +4,5 @@ parallel = True
 
 [report]
 omit =
-  poet/test/*
+  sholl/test/*
   .tox/*

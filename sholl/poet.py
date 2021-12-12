@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-""" homebrew-pypi-poet
+""" brewzilla
 
-Invoked like "poet foo" for some package foo **which is presently
+Invoked like "" for some package foo **which is presently
 installed in sys.path**, determines which packages foo and its dependents
 depend on, downloads them from pypi and computes their checksums, and
 spits out Homebrew resource stanzas.
@@ -21,19 +21,16 @@ import sys
 import warnings
 
 import pkg_resources
+import re
+from typing import Any, Optional
 
 from .templates import FORMULA_TEMPLATE, RESOURCE_TEMPLATE
 from .version import __version__
 
-try:
-    # Python 2.x
-    from urllib2 import urlopen
-except ImportError:
-    # Python 3.x
-    from urllib.request import urlopen
+from urllib.request import urlopen
 
 # Show warnings and greater by default
-logging.basicConfig(level=int(os.environ.get("POET_DEBUG", 30)))
+logging.basicConfig(level=int(os.environ.get("sholl_DEBUG", 30)))
 
 
 class PackageNotInstalledWarning(UserWarning):
@@ -46,6 +43,48 @@ class PackageVersionNotFoundWarning(UserWarning):
 
 class ConflictingDependencyWarning(UserWarning):
     pass
+
+def write_output_to_file(text: str, path: str):
+    try:
+        file=open(path, "w+")
+        print(text, file=file)
+    except:
+        raise FileNotFoundError("File %s does not exist" % path)
+
+def print_output(text: str):
+    print(text)
+
+def parse_homebrew_formula_description(text: str) -> str:
+    x = re.search("(?<=desc \").*?(?=\")", text)
+    if x:
+        return x.group()
+    else:
+        return None
+
+def parse_homebrew_formula_homepage(text: str) -> str:
+    x = re.search("(?<=homepage \").*?(?=\")", text)
+    if x:
+        return x.group()
+    else:
+        return None
+
+def parse_homebrew_formula_test(text: str) -> str:
+    x = re.search("(?<=test do\n    ).*?(?=\n  end)", text, flags=re.DOTALL)
+    if x:
+        return x.group()
+    else:
+        return None
+
+def parse_homebrew_formula(path: str) -> tuple[str, str, str]:
+    try:
+        file = open(path, "r")
+    except:
+        raise FileNotFoundError("File %s does not exist" % path)
+    text = file.read()
+    description = parse_homebrew_formula_description(text)
+    homepage = parse_homebrew_formula_homepage(text)
+    test = parse_homebrew_formula_test(text)
+    return description, homepage, test
 
 
 def recursive_dependencies(package):
@@ -152,7 +191,35 @@ def make_graph(pkg):
     )
 
 
-def formula_for(package, also=None):
+def formula_for(package, description: Optional[str] = None, homepage: Optional[str] = None, test: Optional[str] = None,  also=None):
+    also = also or []
+    req = pkg_resources.Requirement.parse(package)
+    package_name = req.project_name
+    nodes = merge_graphs(make_graph(p) for p in [package] + also)
+    resources = [value for key, value in nodes.items()
+                 if key.lower() != package_name.lower()]
+
+    if package_name in nodes:
+        root = nodes[package_name]
+    elif package_name.lower() in nodes:
+        root = nodes[package_name.lower()]
+    else:
+        raise Exception("Could not find package {} in nodes {}".format(package, nodes.keys()))
+    root["test"] = "false"
+    root["description"] = "Shiny new formula"
+    if description:
+        root["description"] = description
+    if homepage:
+        root["homepage"] = homepage
+    if test:
+        root["test"] = test
+    python = "python" if sys.version_info.major == 2 else "python3"
+    return FORMULA_TEMPLATE.render(package=root,
+                                   resources=resources,
+                                   python=python,
+                                   ResourceTemplate=RESOURCE_TEMPLATE)
+    
+def updated_formula_for(package: Any, path: Optional[str] = None, description: Optional[str] = None, homepage: Optional[str] = None, test: Optional[str] = None,  also=None):
     also = also or []
 
     req = pkg_resources.Requirement.parse(package)
@@ -168,7 +235,21 @@ def formula_for(package, also=None):
         root = nodes[package_name.lower()]
     else:
         raise Exception("Could not find package {} in nodes {}".format(package, nodes.keys()))
-
+    root["test"] = "false"
+    root["description"] = "Shiny new formula"
+    previous_description, previous_homepage, previous_test = parse_homebrew_formula(path)
+    if previous_description:
+        root["description"] = previous_description
+    if previous_homepage:
+        root["homepage"] = previous_homepage
+    if previous_test:
+        root["test"] = previous_test
+    if description:
+        root["description"] = description
+    if homepage:
+        root["homepage"] = homepage
+    if test:
+        root["test"] = test
     python = "python" if sys.version_info.major == 2 else "python3"
     return FORMULA_TEMPLATE.render(package=root,
                                    resources=resources,
@@ -203,56 +284,44 @@ def main():
     parser = argparse.ArgumentParser(
         description='Generate Homebrew resource stanzas for pypi packages '
                     'and their dependencies.')
-    actions = parser.add_mutually_exclusive_group()
-    actions.add_argument(
-        '--single', '-s', metavar='package', nargs='+',
+    parser.add_argument(
+        '--update', '-u', action="store", type=str,
         help='Generate a resource stanza for one or more packages, '
              'without considering dependencies.')
-    actions.add_argument(
-        '--formula', '-f', metavar='package',
-        help='Generate a complete formula for a pypi package with its '
-             'recursive pypi dependencies as resources.')
-    actions.add_argument(
-        '--resources', '-r', metavar='package',
-        help='Generate resource stanzas for a package and its recursive '
-             'dependencies (default).')
     parser.add_argument(
-        '--also', '-a', metavar='package', action='append', default=[],
-        help='Specify an additional package that should be added to the '
-             'resource list with its recursive dependencies. May not be used '
-             'with --single. May be specified more than once.')
+        '--description', '-d', action="store", type=str,
+        help='Generate a resource stanza for one or more packages, '
+             'without considering dependencies.')
+    parser.add_argument(
+        '--homepage', '-p', action="store", type=str,
+        help='Generate a resource stanza for one or more packages, '
+             'without considering dependencies.')
+    parser.add_argument(
+        '--test', '-t', action="store", type=str,
+        help='Generate a resource stanza for one or more packages, '
+             'without considering dependencies.')
+    parser.add_argument(
+        '--output', '-o', action="store", type=str,
+        help='Generate a resource stanza for one or more packages, '
+             'without considering dependencies.')
     parser.add_argument('package', help=argparse.SUPPRESS, nargs='?')
+
     parser.add_argument(
         '-V', '--version', action='version',
-        version='homebrew-pypi-poet {}'.format(__version__))
+        version='sholl {}'.format(__version__))
     args = parser.parse_args()
-
-    if (args.formula or args.resources) and args.package:
-        print('--formula and --resources take a single argument.',
-              file=sys.stderr)
-        parser.print_usage(sys.stderr)
-        return 1
-
-    if args.also and args.single:
-        print("Can't use --also with --single",
-              file=sys.stderr)
-        parser.print_usage(sys.stderr)
-        return 1
-
-    if args.formula:
-        print(formula_for(args.formula, args.also))
-    elif args.single:
-        for i, package in enumerate(args.single):
-            data = research_package(package)
-            print(RESOURCE_TEMPLATE.render(resource=data))
-            if i != len(args.single)-1:
-                print()
-    else:
-        package = args.resources or args.package
-        if not package:
-            parser.print_usage(sys.stderr)
-            return 1
-        print(resources_for([package] + args.also))
+    if args.update and args.package:
+        formula=updated_formula_for(args.package, args.update, description=args.description, homepage=args.homepage, test=args.test, also=args.test)
+        if args.output:
+            write_output_to_file(formula, args.output)
+        else:
+            print_output(formula)
+    elif args.package:
+        formula=formula_for(args.package , description=args.description, homepage=args.homepage, test=args.test, also=args.test)
+        if args.output:
+            write_output_to_file(formula, args.output)
+        else:
+            print_output(formula)
     return 0
 
 

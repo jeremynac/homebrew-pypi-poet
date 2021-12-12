@@ -1,4 +1,4 @@
 import sys
-from .poet import main
+from .sholl import main
 
 sys.exit(main())

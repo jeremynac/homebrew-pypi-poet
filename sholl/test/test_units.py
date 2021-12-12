@@ -2,32 +2,32 @@ from __future__ import absolute_import, print_function
 
 import mock
 
-import poet
-from poet_fixtures import old_style_pypi_json
+import sholl
+from sholl_fixtures import old_style_pypi_json
 from testfixtures import LogCapture
 
 
-class TestPoet(object):
+class Testsholl(object):
     def test_research_non_canonical_version(self):
-        poet.research_package("functools32", "3.2.3.post2")
+        sholl.research_package("functools32", "3.2.3.post2")
 
     @mock.patch('codecs.getreader')
     def test_research_downloads_if_necessary(self, mock_getreader):
         mock_getreader.return_value = mock.mock_open(read_data=old_style_pypi_json)
         with LogCapture() as l:
-            poet.research_package("eleven")
+            sholl.research_package("eleven")
             assert "Fetching sdist" in str(l)
 
 
 class TestUtils(object):
     def test_dash_to_studly(self):
-        assert poet.util.dash_to_studly("magic-worm-hole") == "MagicWormHole"
-        assert poet.util.dash_to_studly("some_package-name") == "SomePackageName"
+        assert sholl.util.dash_to_studly("magic-worm-hole") == "MagicWormHole"
+        assert sholl.util.dash_to_studly("some_package-name") == "SomePackageName"
 
 
 unlinted = """
-  resource "homebrew-pypi-poet" do
-    url "https://files.pythonhosted.org/packages/18/6d/c6d1543d2272696f22893eff382eb4b7d2594c983f87e7786abf6ad3ec9e/homebrew-pypi-poet-0.7.1.tar.gz"
+  resource "sholl" do
+    url "https://files.pythonhosted.org/packages/18/6d/c6d1543d2272696f22893eff382eb4b7d2594c983f87e7786abf6ad3ec9e/sholl-0.7.1.tar.gz"
     sha256 "8b3bba0b5f49ca76453464a2aa5c7cc19a8e85df141c86c98e1998796bedeafc"
   end
 
@@ -50,7 +50,7 @@ unlinted = """
 
 class TestLint(object):
     def test_lint(self):
-        linted = poet.lint(unlinted)
+        linted = sholl.lint(unlinted)
         jinja_index = linted.index("Jinja2")
-        poet_index = linted.index("homebrew-pypi-poet")
-        assert poet_index > jinja_index
+        sholl_index = linted.index("sholl")
+        assert sholl_index > jinja_index
