@@ -191,11 +191,10 @@ def make_graph(pkg):
     )
 
 
-def formula_for(package, description: Optional[str] = None, homepage: Optional[str] = None, test: Optional[str] = None,  also=None):
-    also = also or []
+def formula_for(package, description: Optional[str] = None, homepage: Optional[str] = None, test: Optional[str] = None):
     req = pkg_resources.Requirement.parse(package)
     package_name = req.project_name
-    nodes = merge_graphs(make_graph(p) for p in [package] + also)
+    nodes = merge_graphs(make_graph(p) for p in [package])
     resources = [value for key, value in nodes.items()
                  if key.lower() != package_name.lower()]
 
@@ -219,13 +218,11 @@ def formula_for(package, description: Optional[str] = None, homepage: Optional[s
                                    python=python,
                                    ResourceTemplate=RESOURCE_TEMPLATE)
     
-def updated_formula_for(package: Any, path: Optional[str] = None, description: Optional[str] = None, homepage: Optional[str] = None, test: Optional[str] = None,  also=None):
-    also = also or []
-
+def updated_formula_for(package: Any, path: Optional[str] = None, description: Optional[str] = None, homepage: Optional[str] = None, test: Optional[str] = None):
     req = pkg_resources.Requirement.parse(package)
     package_name = req.project_name
 
-    nodes = merge_graphs(make_graph(p) for p in [package] + also)
+    nodes = merge_graphs(make_graph(p) for p in [package])
     resources = [value for key, value in nodes.items()
                  if key.lower() != package_name.lower()]
 
@@ -311,7 +308,7 @@ def main():
         version='sholl {}'.format(__version__))
     args = parser.parse_args()
     if args.update and args.package:
-        formula=updated_formula_for(args.package, args.update, description=args.description, homepage=args.homepage, test=args.test, also=args.test)
+        formula=updated_formula_for(args.package, args.update, description=args.description, homepage=args.homepage, test=args.test)
         if args.output:
             write_output_to_file(formula, args.output)
         else:
