@@ -1,7 +1,0 @@
-# Release workflow
-
-* Bump version to release version in sholl/version.py
-* Commit and tag (git tag -a vX.Y.Z)
-* Bump version to dev in sholl/version.py
-* Commit
-* Push to github with --tags; Travis handles PyPI deployment

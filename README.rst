@@ -1,18 +1,22 @@
 sholl
 ==================
 
-|Build Status| |Code Health| |PyPI page| |MIT license|
-
 Invoked like ``sholl foo`` for some package foo **which is presently
 installed in sys.path**, determines which packages foo and its
 dependents depend on, downloads them from pypi and computes their
 checksums, and spits out Homebrew resource stanzas.
 
-``sholl -f foo`` will give you a complete Homebrew formula.
+``sholl foo`` will give you a complete Homebrew formula.
 
-``sholl -s foo`` will write a resource stanza for a single package
-``foo``, which does not need to be installed, without considering its
-dependencies.
+``sholl foo -p https://homepageurl.com`` will give you a complete Homebrew formula with "https://homepageurl.com" as homepage.
+
+``sholl foo -d "Some description"`` will give you a complete Homebrew formula with "Some description" as description.
+
+``sholl foo -t false`` will give you a complete Homebrew formula with "false" as test.
+
+``sholl foo -u ./sholl.rb`` will give you an updated version of the sholl.rb formula.
+
+``sholl foo -o ./sholl.rb`` will give you a complete Homebrew formula and save it in ./sholl.rb.
 
 ``sholl`` will use the versions of the packages that you presently have
 installed. If a package it wants to reference is not installed, the
@@ -28,30 +32,28 @@ Usage is like:
 
 ::
 
-    usage: sholl [-h] [-V]
-                [--single package [package ...] | --formula package |
-                 --resources package]
-                [--also package]
+    usage: sholl  [-h --help] 
+                  [-p --homepage] 
+                  [-d --description] 
+                  [-t --test]
+                  [-u --update]
+                  [-o --output]
 
     Generate Homebrew resource stanzas for pypi packages and their dependencies.
 
     optional arguments:
-      -h, --help            show this help message and exit
-      --single package [package ...], -s package [package ...]
-                            Generate a resource stanza for one or more packages,
-                            without considering dependencies.
-      --formula package, -f package
-                            Generate a complete formula for a pypi package with
-                            its recursive pypi dependencies as resources.
-      --also package, -a package
-                            Specify an additional package that should be added to
-                            the resource list with its recursive dependencies. May
-                            not be used with --single. May be specified more than
-                            once.
-      --resources package, -r package
-                            Generate resource stanzas for a package and its
-                            recursive dependencies (default).
-      -V, --version         show program's version number and exit
+      -h, --help            Show this help message and exit.
+      --homepage homepage, -h homepage
+         Specify the homepage url.
+      --description description, -d description
+         Specify the description.
+      --test test, -t test
+         Specify the test section.
+      --update formula_path, -u formula_path
+         Update a previous formula by specifying a path to it.
+      --output output_file, -o output_file
+         Specify an output file
+      -V, --version         Show program's version number and exit
 
 License
 -------
@@ -61,14 +63,4 @@ sholl is offered under the MIT license.
 Contributors
 ------------
 
-sholl is maintained by Tim D. Smith. Robson Peixoto,
-Alessio Bogon, Julien Maupetit, and Zhiming Wang are thanked for their helpful contributions!
-
-.. |Build Status| image:: https://travis-ci.org/tdsmith/sholl.svg?branch=master
-   :target: https://travis-ci.org/tdsmith/sholl
-.. |Code Health| image:: https://landscape.io/github/tdsmith/sholl/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/tdsmith/sholl/master
-.. |PyPI page| image:: https://img.shields.io/pypi/v/sholl.svg
-   :target: https://pypi.python.org/pypi/sholl
-.. |MIT license| image:: https://img.shields.io/pypi/l/sholl.svg
-   :target: https://github.com/tdsmith/sholl/blob/master/LICENSE
+sholl is maintained by Jeremy Naccache
