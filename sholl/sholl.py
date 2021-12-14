@@ -314,7 +314,7 @@ def main():
         else:
             print_output(formula)
     elif args.package:
-        formula=formula_for(args.package , description=args.description, homepage=args.homepage, test=args.test, also=args.test)
+        formula=formula_for(args.package , description=args.description, homepage=args.homepage, test=args.test)
         if args.output:
             write_output_to_file(formula, args.output)
         else:
