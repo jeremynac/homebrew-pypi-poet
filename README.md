@@ -64,3 +64,8 @@ Contributors
 ------------
 
 sholl is maintained by Jeremy Naccache
+
+Thanks
+------
+
+Special thanks to Tim D. Smith who initially developed [homebrew-pypi-poet](https://github.com/tdsmith/homebrew-pypi-poet), which was forked to develop this project.
