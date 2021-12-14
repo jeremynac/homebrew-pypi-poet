@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sholl"
-version = "0.1.0"
+version = "0.0.2"
 description = "Generate Hombrew formulas for your python projects"
 authors = ["jeremynac <jeremynac@hotmail.fr>"]
 license = "MIT"
