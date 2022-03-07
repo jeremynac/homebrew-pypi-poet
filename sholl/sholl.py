@@ -283,24 +283,20 @@ def main():
                     'and their dependencies.')
     parser.add_argument(
         '--update', '-u', action="store", type=str,
-        help='Generate a resource stanza for one or more packages, '
+        help='Updates a resource stanza for one or more packages, '
              'without considering dependencies.')
     parser.add_argument(
         '--description', '-d', action="store", type=str,
-        help='Generate a resource stanza for one or more packages, '
-             'without considering dependencies.')
+        help='Set the description field')
     parser.add_argument(
         '--homepage', '-p', action="store", type=str,
-        help='Generate a resource stanza for one or more packages, '
-             'without considering dependencies.')
+        help='Set the homepage field')
     parser.add_argument(
         '--test', '-t', action="store", type=str,
-        help='Generate a resource stanza for one or more packages, '
-             'without considering dependencies.')
+        help='Set the test field')
     parser.add_argument(
         '--output', '-o', action="store", type=str,
-        help='Generate a resource stanza for one or more packages, '
-             'without considering dependencies.')
+        help='Print output to a file')
     parser.add_argument('package', help=argparse.SUPPRESS, nargs='?')
 
     parser.add_argument(
